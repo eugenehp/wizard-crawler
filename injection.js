@@ -10,25 +10,7 @@ $(document).ready(function(){
 	window.injected = true;
 });
 
-function checkEvent(e){
-	e.preventDefault();
-	
-	var selector = getSelectorForElement(e.target);
-
-	if( selector.split('.').length <= 2 ){
-
-		var parentNode = e.target.parentNode;
-
-		while( $(parentNode).attr('class') == undefined ){
-			selector = getSelectorForElement(parentNode) + ' > ' + selector;
-			parentNode = parentNode.parentNode;
-		}
-
-		selector = getSelectorForElement(parentNode) + ' > ' + selector;
-	}
-
-	// console.log('event',e);
-	// console.log(selector);
+function selectorToArrays(selector){
 	var texts = [];
 	var links = [];
 	var images = [];
@@ -53,6 +35,35 @@ function checkEvent(e){
 
 	});
 
+	return {
+		selector: 	selector,
+		texts: 		texts,
+		links: 		links,
+		images: 	images
+	};
+}
+
+function checkEvent(e){
+	e.preventDefault();
+	
+	var selector = getSelectorForElement(e.target);
+
+	if( selector.split('.').length <= 2 ){
+
+		var parentNode = e.target.parentNode;
+
+		while( $(parentNode).attr('class') == undefined ){
+			selector = getSelectorForElement(parentNode) + ' > ' + selector;
+			parentNode = parentNode.parentNode;
+		}
+
+		selector = getSelectorForElement(parentNode) + ' > ' + selector;
+	}
+
+	// console.log('event',e);
+	// console.log(selector);
+	var selectorObject = selectorToArrays(selector);
+
 	chrome.storage.local.get('current',function(data){
 		console.log('current',data.current);
 		chrome.storage.local.get(data.current,function(current){
@@ -61,12 +72,19 @@ function checkEvent(e){
 				current = {};
 			}
 
-			console.log('SELECTOR',current);
+			if( current.hasOwnProperty(data.current) ){
+				var object = current[data.current];
+				// console.log('SELECTOR', object.selector );
+				// console.log('TEXTS', $(object.selector) );
 
-			current.selector = selector;
-			current.texts = texts;
-			current.links = links;
-			current.images = images;
+				// trying with the new selector from the UI
+				// selectorObject = selectorToArrays( object.selector );
+			}
+
+			current.selector = selectorObject.selector;
+			current.texts = selectorObject.texts;
+			current.links = selectorObject.links;
+			current.images = selectorObject.images;
 
 			var object = {};
 			object[data.current] = current;
