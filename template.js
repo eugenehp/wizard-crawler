@@ -40,7 +40,7 @@ function updateView() {
 		var images 			= [];
 
 		if(data['selectDates']) {
-			$('#selectDatesSelector').text( data['selectDates'].selector );
+			$('#selectDatesSelector').val( data['selectDates'].selector );
 			dates = data['selectDates'].texts;
 
 			selectDatesSplit = data['selectDates'].split;
@@ -49,7 +49,7 @@ function updateView() {
 			$('#selectDatesPart').val(selectDatesPart || 'first');
 		}
 		if(data['selectTitles']) {
-			$('#selectTitlesSelector').text( data['selectTitles'].selector );
+			$('#selectTitlesSelector').val( data['selectTitles'].selector );
 			titles = data['selectTitles'].texts;
 
 			selectTitlesSplit = data['selectTitles'].split;
@@ -58,7 +58,7 @@ function updateView() {
 			$('#selectTitlesPart').val(selectTitlesPart || 'first');
 		}
 		if(data['selectDescriptions']) {
-			$('#selectDescriptionsSelector').text( data['selectDescriptions'].selector );
+			$('#selectDescriptionsSelector').val( data['selectDescriptions'].selector );
 			descriptions = data['selectDescriptions'].texts;
 
 			selectDescriptionsSplit = data['selectDescriptions'].split;
@@ -68,13 +68,12 @@ function updateView() {
 		}
 		if(data['selectLink']) {
 			links = data['selectLink'].links;
+			$('#selectLinkSelector').val( data['selectLink'].selector );
 		}
 		if(data['selectImage']) {
 			images = data['selectImage'].images;
+			$('#selectImageSelector').val( data['selectImage'].selector );
 		}
-
-		if(data['selectLink']) $('#selectLinkSelector').text( data['selectLink'].selector );
-		if(data['selectImage']) $('#selectImageSelector').text( data['selectImage'].selector );
 
 		var length = dates.length || titles.length || descriptions.length || links.length || images.length;
 
@@ -92,6 +91,18 @@ function updateView() {
 				date = date.split(selectDatesSplit);
 				var part = selectDatesPart === 'first' ? 0 : 1;
 				date = date[part];
+			}
+
+			if(selectTitlesSplit){
+				title = title.split(selectTitlesSplit);
+				var part = selectTitlesPart === 'first' ? 0 : 1;
+				title = title[part];
+			}
+
+			if(selectDescriptionsSplit){
+				description = description.split(selectDescriptionsSplit);
+				var part = selectDescriptionsPart === 'first' ? 0 : 1;
+				description = description[part];
 			}
 
 			var row = 	"<tr><th scope='row'>"+index+"</th><td> "
@@ -130,6 +141,14 @@ function doApply(){
 		if( !data['selectDates'] ) 			data['selectDates'] = {};
 		if( !data['selectTitles'] ) 		data['selectTitles'] = {};
 		if( !data['selectDescriptions'] ) 	data['selectDescriptions'] = {};
+		if( !data['selectLink'] ) 			data['selectLink'] = {};
+		if( !data['selectImage'] ) 			data['selectImage'] = {};
+
+		data['selectDates'].selector 			= $('#selectDatesSelector').val();
+		data['selectTitles'].selector 			= $('#selectTitlesSelector').val();
+		data['selectDescriptions'].selector 	= $('#selectDescriptionsSelector').val();
+		data['selectLink'].selector 			= $('#selectLinkSelector').val();
+		data['selectImage'].selector 			= $('#selectImageSelector').val();
 
 		data['selectDates'].split 			= $('#selectDatesSplit').val();
 		data['selectTitles'].split 			= $('#selectTitlesSplit').val();
@@ -139,10 +158,13 @@ function doApply(){
 		data['selectTitles'].part	 		= $('#selectTitlesPart').val();
 		data['selectDescriptions'].part 	= $('#selectDescriptionsPart').val();
 
+		
+
 		chrome.storage.local.set(
 			data
 		,function savedNotification(){
 			// $('#debug').val( JSON.stringify( data ) );
+			// alert(1)
 			updateView();
 			// window.close();
 		});

@@ -12,7 +12,7 @@ function checkEvent(e){
 	
 	var selector = getSelectorForElement(e.target);
 
-	if( selector.split('.').length<=1 ){
+	if( selector.split('.').length <= 2 ){
 
 		var parentNode = e.target.parentNode;
 
