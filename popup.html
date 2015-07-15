@@ -25,7 +25,6 @@
 	<style type="text/css">
 		html, body, .container-fluid {
 			height: 100%;
-			width: 300px;
 		}
 		textarea.form-control {
 			height: 100%;
@@ -34,8 +33,93 @@
 </head>
 <body>
 	<div class="container-fluid">
-		<p>Create template for this specific website</p>
-		<button type="button" class="btn btn-primary" id="selectDates">Select dates</button>
+		<p>
+			Create template for this specific website
+			<br>
+			<button type="button" class="btn btn-default" id="clearStorage">clear storage</button>
+			<button type="button" class="btn btn-default" id="saveTemplate">save template</button>
+		</p>
+
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>
+						<button type="button" class="btn btn-primary" id="selectDates">Select dates</button>
+					</th>
+					<th>
+						<button type="button" class="btn btn-primary" id="selectTitles">Select titles&nbsp;</button>
+					</th>
+					<th>
+						<button type="button" class="btn btn-primary" id="selectDescriptions">Select descriptions</button>
+					</th>
+					<th>
+						<button type="button" class="btn btn-primary" id="selectLink">Select link</button>
+					</th>
+					<th>
+						<button type="button" class="btn btn-primary" id="selectImage">Select image</button>
+					</th>
+				</tr>
+				<tr>
+					<th scope="row"> selector </th>
+					<td id="selectDatesSelector"> - </td>
+					<td id="selectTitlesSelector"> - </td>
+					<td id="selectDescriptionsSelector"> - </td>
+					<td id="selectLinkSelector"> - </td>
+					<td id="selectImageSelector"> - </td>
+				</tr>
+				<tr>
+					<th scope="row"> split </th>
+					<td>
+						 <input type="text" class="form-control" id="selectDatesSplit">
+					</td>
+					<td>
+						 <input type="text" class="form-control" id="selectTitlesSplit">
+					</td>
+					<td>
+						 <input type="text" class="form-control" id="selectDescriptionsSplit">
+					</td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th scope="row"> part </th>
+					<td>
+						<select id="selectDatesPart" class="form-control">
+							<option>first</option>
+							<option>last</option>
+						</select>
+					</td>
+					<td>
+						<select id="selectTitlesPart" class="form-control">
+							<option>first</option>
+							<option>last</option>
+						</select>
+					</td>
+					<td>
+						<select id="selectDescriptionsPart" class="form-control">
+							<option>first</option>
+							<option>last</option>
+						</select>
+					</td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th scope="row"> </th>
+					<td><button type="button" class="btn btn-default" id="applyDates">apply</button></td>
+					<td><button type="button" class="btn btn-default" id="applyTitles">apply</button></td>
+					<td><button type="button" class="btn btn-default" id="applyDescriptions">apply</button></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody id="tbody">
+			</tbody>
+		</table>
+
+		<textarea id="debug"></textarea>
+
 	</div>
 </body>
 </html>

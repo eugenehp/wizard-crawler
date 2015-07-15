@@ -24,8 +24,11 @@ function checkEvent(e){
 		selector = getSelectorForElement(parentNode) + ' > ' + selector;
 	}
 
-	console.log('event',e);
-	console.log(selector);
+	// console.log('event',e);
+	// console.log(selector);
+	var texts = [];
+	var links = [];
+	var images = [];
 
 	$(selector).each(function(elementIndex){
 		var element = $(selector).get(elementIndex);
@@ -36,13 +39,45 @@ function checkEvent(e){
 					.end()
 					.text()
 					.trim();
-		console.log( text );
+		
+		if(text) texts.push( text );
+
+		var link = $(element).attr('href');
+		if(link) links.push(link);
+
+		var image = $(element).attr('src');
+		if(image) images.push(image);
+
+	});
+
+	chrome.storage.local.get('current',function(data){
+		console.log('current',data.current);
+		chrome.storage.local.get(data.current,function(current){
+
+			if(!current) current = {};
+
+			current.selector = selector;
+			current.texts = texts;
+			current.links = links;
+			current.images = images;
+
+			var object = {};
+			object[data.current] = current;
+
+			chrome.storage.local.set(
+				object
+			, function() {
+				// Notify that we saved.
+				console.log('Settings saved');
+			});
+		});
 	})
 }
 
 function getSelectorForElement(element){
 	var tagName = $(element).get(0).tagName;
 	var className = $(element).attr('class');
+	if(className) className = className.trim();
 	if(className) className = className.split(/\s+/);
 	if(className) className = className.join('.');
 

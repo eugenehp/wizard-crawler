@@ -7,13 +7,144 @@ $(document).ready(function(){
 		runAt: 	"document_end"
 	}, function(results){} );
 
-	// chrome.tabs.executeScript({
-	// 	code: 'document.body.style.backgroundColor="red"'
-	// });
-
+	$('#clearStorage').click(clearStorage);
 	$('#selectDates').click(selectDates);
+	$('#selectTitles').click(selectTitles);
+	$('#selectDescriptions').click(selectDescriptions);
+	$('#selectLink').click(selectLink);
+	$('#selectImage').click(selectImage);
+
+	$('#applyDates').click(doApply);
+	$('#applyTitles').click(doApply);
+	$('#applyDescriptions').click(doApply);
+
+	updateView();
 });
 
-function selectDates(){
+function updateView() {
+	chrome.storage.local.get(['selectDates','selectTitles','selectDescriptions','selectLink','selectImage'],function(data){
 
+		$('#debug').val( JSON.stringify( data, null, 2 ) );
+
+		var selectDatesSplit = '';
+		var selectDatesPart = '';
+		var selectTitlesSplit = '';
+		var selectTitlesPart = '';
+		var selectDescriptionsSplit = '';
+		var selectDescriptionsPart = '';
+
+		var dates 			= [];
+		var titles 			= [];
+		var descriptions 	= [];
+		var links 			= [];
+		var images 			= [];
+
+		if(data['selectDates']) {
+			$('#selectDatesSelector').text( data['selectDates'].selector );
+			dates = data['selectDates'].texts;
+
+			selectDatesSplit = data['selectDates'].split;
+			selectDatesPart = data['selectDates'].part;
+			$('#selectDatesSplit').val(selectDatesSplit);
+			$('#selectDatesPart').val(selectDatesPart || 'first');
+		}
+		if(data['selectTitles']) {
+			$('#selectTitlesSelector').text( data['selectTitles'].selector );
+			titles = data['selectTitles'].texts;
+
+			selectTitlesSplit = data['selectTitles'].split;
+			selectTitlesPart = data['selectTitles'].part;
+			$('#selectTitlesSplit').val(selectTitlesSplit);
+			$('#selectTitlesPart').val(selectTitlesPart || 'first');
+		}
+		if(data['selectDescriptions']) {
+			$('#selectDescriptionsSelector').text( data['selectDescriptions'].selector );
+			descriptions = data['selectDescriptions'].texts;
+
+			selectDescriptionsSplit = data['selectDescriptions'].split;
+			selectDescriptionsPart = data['selectDescriptions'].part;
+			$('#selectDescriptionsSplit').val(selectDescriptionsSplit);
+			$('#selectDescriptionsPart').val(selectDescriptionsPart || 'first');
+		}
+		if(data['selectLink']) {
+			links = data['selectLink'].links;
+		}
+		if(data['selectImage']) {
+			images = data['selectImage'].images;
+		}
+
+		if(data['selectLink']) $('#selectLinkSelector').text( data['selectLink'].selector );
+		if(data['selectImage']) $('#selectImageSelector').text( data['selectImage'].selector );
+
+		var length = dates.length || titles.length || descriptions.length || links.length || images.length;
+
+		$('#tbody').children().remove();
+		for (var i = 0; i < length; i++) {
+
+			var index 			= 1 + i;
+			var date 			= ""; if( dates ) if( dates.length > i ) 			date = dates[i];
+			var title 			= ""; if( titles ) if( titles.length > i ) 			title = titles[i];
+			var description 	= ""; if( descriptions ) if( descriptions.length > i ) 	description = descriptions[i];
+			var link 			= ""; if( links ) if( links.length > i ) 			link = links[i];
+			var image 			= ""; if( images ) if( images.length > i )			image = images[i];
+
+			if(selectDatesSplit){
+				date = date.split(selectDatesSplit);
+				var part = selectDatesPart === 'first' ? 0 : 1;
+				date = date[part];
+			}
+
+			var row = 	"<tr><th scope='row'>"+index+"</th><td> "
+			row 	+=	date+" </td><td> ";
+			row 	+=	title+" </td><td> ";
+			row 	+=	description+" </td><td>";
+			row 	+=	'<a class="btn btn-default" href="'+link+'" title="'+link+'">link</a></td><td>';
+			row 	+=	"<img src='"+image+"' alt='"+image+"' width=100 height=100/></td></tr>";
+			$('#tbody').append( row );
+		};
+	})
+}
+
+function clearStorage(){
+	chrome.storage.local.clear();
+	window.close();
+}
+
+function selectDates()			{	doSelect('selectDates') 		}
+function selectTitles()			{	doSelect('selectTitles') 		}
+function selectDescriptions()	{	doSelect('selectDescriptions') 	}
+function selectLink()			{	doSelect('selectLink') 		}
+function selectImage()			{	doSelect('selectImage') 		}
+
+function doSelect(selectName){
+	chrome.storage.local.set({
+		current: selectName
+	},function savedNotification(){
+		window.close();
+	});
+}
+
+function doApply(){
+	chrome.storage.local.get(['selectDates','selectTitles','selectDescriptions','selectLink','selectImage'],function(data){
+
+		if( !data['selectDates'] ) 			data['selectDates'] = {};
+		if( !data['selectTitles'] ) 		data['selectTitles'] = {};
+		if( !data['selectDescriptions'] ) 	data['selectDescriptions'] = {};
+
+		data['selectDates'].split 			= $('#selectDatesSplit').val();
+		data['selectTitles'].split 			= $('#selectTitlesSplit').val();
+		data['selectDescriptions'].split 	= $('#selectDescriptionsSplit').val();
+
+		data['selectDates'].part 			= $('#selectDatesPart').val();
+		data['selectTitles'].part	 		= $('#selectTitlesPart').val();
+		data['selectDescriptions'].part 	= $('#selectDescriptionsPart').val();
+
+		chrome.storage.local.set(
+			data
+		,function savedNotification(){
+			// $('#debug').val( JSON.stringify( data ) );
+			updateView();
+			// window.close();
+		});
+	});
 }
