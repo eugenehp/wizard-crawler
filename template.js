@@ -7,13 +7,17 @@ $(document).ready(function(){
 		runAt: 	"document_end"
 	}, function(results){} );
 
-	$('#clearStorage').click(clearStorage);
-	$('#selectDates').click(selectDates);
-	$('#selectTitles').click(selectTitles);
-	$('#selectDescriptions').click(selectDescriptions);
-	$('#selectLink').click(selectLink);
-	$('#selectImage').click(selectImage);
+	var elements = ['selectRootElement','selectDates','selectTitles','selectDescriptions','selectLink','selectImage'];
+	elements.forEach(function(element,index,array){
 
+		(function(element){ 	// start clojure
+			$('#'+element).click(function(){
+				doSelect(element);
+			});
+		})(element); 			// end clojure
+	});
+
+	$('#clearStorage').click(clearStorage);
 	$('#applyDates').click(doApply);
 	$('#applyTitles').click(doApply);
 	$('#applyDescriptions').click(doApply);
@@ -120,12 +124,6 @@ function clearStorage(){
 	chrome.storage.local.clear();
 	window.close();
 }
-
-function selectDates()			{	doSelect('selectDates') 		}
-function selectTitles()			{	doSelect('selectTitles') 		}
-function selectDescriptions()	{	doSelect('selectDescriptions') 	}
-function selectLink()			{	doSelect('selectLink') 		}
-function selectImage()			{	doSelect('selectImage') 		}
 
 function doSelect(selectName){
 	chrome.storage.local.set({

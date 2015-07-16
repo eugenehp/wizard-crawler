@@ -5,55 +5,52 @@ void 0===c?d&&"get"in d&&null!==(e=d.get(a,b))?e:(e=n.find.attr(a,b),null==e?voi
 
 $(document).ready(function(){
 	// makes to load it only once
-
-	/*var holder = $('<div></div>');
-	holder.css({
-		position: 		'absolute',
-		background: 	'blue',
-		opacity: 		0.5,
-		// 'z-index': 		9999,
-		width: 			100,
-		height: 		100,
-		top: 			0,
-		left: 			0
-	});
-
-	$(document.body).append(holder);*/
-
-	var bod= document.body;
-	var walker = document.createTreeWalker(bod,NodeFilter.SHOW_ELEMENT,null,false);
-	function on(elem){
-		var oldBG = this.style.backgroundColor;
-		this.style.backgroundColor 	='red';
-		this.style.opacity 			= 0.5;
-		this.addEventListener("mouseout",function(e){
-			this.style.backgroundColor 	= oldBG;
-			this.style.opacity 			= 1.0;
-		},false);
-	}
-
-	while (walker.nextNode()){
-		walker.currentNode.addEventListener("mouseover",on,false);
-		//walker.currentNode.addEventListener("mouseout",off,false);
-	}
-
 	if(!!window.injected == false) {
-		$(document).click(checkEvent);
 
-		$(document).mouseenter(function(e){
-			var offset 	= $(e.target).offset();
-			var width 	= $(e.target).width();
-			var height 	= $(e.target).height();
-			console.log(offset, width, height, e);
-		});
+		$(document).click(function(e){
+			e.preventDefault();
 
-		$(document).mouseleave(function(e){
-			console.log(e);
+			chrome.storage.local.get('current',function(data){
+				var current = data.current;
+				console.log('current', current, current == 'selectRootElement');
+
+				if( current == 'selectRootElement' )
+					selectRootElement(e, current);
+				else
+					checkEvent(e, current);
+			});
 		});
 	}
 
 	window.injected = true;
 });
+
+function selectRootElement(e, current){
+
+	function selectElement(element, color){
+		if( color == undefined )
+			color = 'blue'
+		console.log( 'selectElement', color, getSelectorForElement(element) );
+		if( element.attr('oldBg') == undefined || element.attr('oldBg') == '' ){
+			var oldBg 		= element.css('background-color');
+			var oldOpacity 	= element.css('opacity');
+			element.css('background-color',color);
+			element.css('opacity','0.5');
+			element.attr('oldBg',oldBg);
+			element.attr('oldOpacity',oldOpacity);
+		}else{
+			element.css('background-color', element.attr('oldBg') );
+			element.css('opacity', element.attr('oldOpacity') );
+			element.attr('oldBg','');
+			element.attr('oldOpacity','');
+		}
+		
+	}
+
+	selectElement($(e.target),'red');
+	selectElement($(e.target.parentNode),'blue');
+	selectElement($(e.target.parentNode.parentNode),'green');
+}
 
 function selectorToArrays(selector){
 	var texts = [];
@@ -88,9 +85,7 @@ function selectorToArrays(selector){
 	};
 }
 
-function checkEvent(e){
-	e.preventDefault();
-	
+function checkEvent(e, current){
 	var selector = getSelectorForElement(e.target);
 
 	if( selector.split('.').length <= 2 ){
@@ -107,34 +102,30 @@ function checkEvent(e){
 
 	selector = prompt('We are going to use this selector',selector);
 
-	// console.log('event',e);
-	// console.log(selector);
 	var selectorObject = selectorToArrays(selector);
 
-	chrome.storage.local.get('current',function(data){
-		console.log('current',data.current);
-		chrome.storage.local.get(data.current,function(current){
+	chrome.storage.local.get(current,function(currentObject){
 
-			if(!current) {
-				current = {};
-			}
+		if(!currentObject) {
+			currentObject = {};
+		}
 
-			current.selector = selectorObject.selector;
-			current.texts = selectorObject.texts;
-			current.links = selectorObject.links;
-			current.images = selectorObject.images;
+		currentObject.selector = selectorObject.selector;
+		currentObject.texts = selectorObject.texts;
+		currentObject.links = selectorObject.links;
+		currentObject.images = selectorObject.images;
 
-			var object = {};
-			object[data.current] = current;
+		var object = {};
+		object[current] = currentObject;
 
-			chrome.storage.local.set(
-				object
-			, function() {
-				// Notify that we saved.
-				console.log('Settings saved');
-			});
+		chrome.storage.local.set(
+			object
+		, function() {
+			// Notify that we saved.
+			console.log('Settings saved');
 		});
-	})
+	});
+
 }
 
 function getSelectorForElement(element){
