@@ -27,10 +27,30 @@ $(document).ready(function(){
 
 function selectRootElement(e, current){
 
-	function selectElement(element, color){
+	function selectElement(element, info, color){
 		if( color == undefined )
 			color = 'blue'
-		console.log( 'selectElement', color, getSelectorForElement(element) );
+		
+		var node 				= element;
+		var fullSelectorName 	= getSelectorForElement(node);
+		node 					= node.parent();
+		fullSelectorName 		= getSelectorForElement(node) + ' > ' + fullSelectorName;
+		node 					= node.parent();
+		
+		while(	getSelectorForElement(node).indexOf('.') == -1	){
+			fullSelectorName 		= getSelectorForElement(node) + ' > ' + fullSelectorName;
+			node 					= node.parent();
+		}
+
+		fullSelectorName 		= getSelectorForElement(node) + ' > ' + fullSelectorName;
+
+		for(var i=0;i<3;i++){
+			fullSelectorName 		= getSelectorForElement(node,false) + ' > ' + fullSelectorName;		
+			node 					= node.parent();
+		}
+
+		console.log( 'selectElement', info, color, fullSelectorName );
+
 		if( element.attr('oldBg') == undefined || element.attr('oldBg') == '' ){
 			var oldBg 		= element.css('background-color');
 			var oldOpacity 	= element.css('opacity');
@@ -45,11 +65,24 @@ function selectRootElement(e, current){
 			element.attr('oldOpacity','');
 		}
 		
+		return fullSelectorName;
 	}
 
-	selectElement($(e.target),'red');
-	selectElement($(e.target.parentNode),'blue');
-	selectElement($(e.target.parentNode.parentNode),'green');
+	selectElement($(e.target),'child - ','red');
+	selectElement($(e.target.parentNode),'parent - ','blue');
+	var selector = selectElement($(e.target.parentNode.parentNode),'grandparent - ','green');
+
+	console.log( $(selector) );
+
+	$(selector).each(function(index){
+		$(this).css('background-color','yellow');
+	});
+
+	var key = current;
+	var data = {
+		selector: selector
+	};
+	saveDataForKey(key,data,true/*debug*/);
 }
 
 function selectorToArrays(selector){
@@ -104,31 +137,41 @@ function checkEvent(e, current){
 
 	var selectorObject = selectorToArrays(selector);
 
-	chrome.storage.local.get(current,function(currentObject){
+	var key 	= current;
+	var data 	= selectorObject;
+
+	saveDataForKey(key,data);
+
+}
+
+function saveDataForKey(key, data, debug){
+	if( debug == undefined )
+		debug = false;
+	chrome.storage.local.get( key ,function(currentObject){
 
 		if(!currentObject) {
 			currentObject = {};
 		}
 
-		currentObject.selector = selectorObject.selector;
-		currentObject.texts = selectorObject.texts;
-		currentObject.links = selectorObject.links;
-		currentObject.images = selectorObject.images;
+		currentObject.selector = data.selector;
+		currentObject.texts = data.texts;
+		currentObject.links = data.links;
+		currentObject.images = data.images;
 
 		var object = {};
-		object[current] = currentObject;
+		object[key] = currentObject;
 
 		chrome.storage.local.set(
 			object
 		, function() {
-			// Notify that we saved.
-			console.log('Settings saved');
+			if(debug)	console.log('Settings saved',object);
 		});
 	});
-
 }
 
-function getSelectorForElement(element){
+function getSelectorForElement(element, withClasses){
+	if( withClasses == undefined )
+		withClasses = true;
 	var tagName = $(element).get(0).tagName;
 	var className = $(element).attr('class');
 	if(className) className = className.trim();
@@ -137,7 +180,7 @@ function getSelectorForElement(element){
 
 	var selector = tagName;
 
-	if(className && className != undefined)
+	if( withClasses && className && className != undefined)
 		selector += '.' + className;
 
 	return selector;

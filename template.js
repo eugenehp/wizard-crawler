@@ -1,4 +1,5 @@
 // creating the template for a specific URL
+var ELEMENTS = ['selectRootElement','selectDates','selectTitles','selectDescriptions','selectLink','selectImage'];
 
 $(document).ready(function(){
 
@@ -7,9 +8,7 @@ $(document).ready(function(){
 		runAt: 	"document_end"
 	}, function(results){} );
 
-	var elements = ['selectRootElement','selectDates','selectTitles','selectDescriptions','selectLink','selectImage'];
-	elements.forEach(function(element,index,array){
-
+	ELEMENTS.forEach(function(element,index,array){
 		(function(element){ 	// start clojure
 			$('#'+element).click(function(){
 				doSelect(element);
@@ -26,7 +25,7 @@ $(document).ready(function(){
 });
 
 function updateView() {
-	chrome.storage.local.get(['selectDates','selectTitles','selectDescriptions','selectLink','selectImage'],function(data){
+	chrome.storage.local.get(ELEMENTS,function(data){
 
 		$('#debug').val( JSON.stringify( data, null, 2 ) );
 
@@ -134,8 +133,7 @@ function doSelect(selectName){
 }
 
 function doApply(){
-	chrome.storage.local.get(['selectDates','selectTitles','selectDescriptions','selectLink','selectImage'],function(data){
-
+	chrome.storage.local.get(ELEMENTS,function(data){
 		if( !data['selectDates'] ) 			data['selectDates'] = {};
 		if( !data['selectTitles'] ) 		data['selectTitles'] = {};
 		if( !data['selectDescriptions'] ) 	data['selectDescriptions'] = {};
@@ -156,13 +154,10 @@ function doApply(){
 		data['selectTitles'].part	 		= $('#selectTitlesPart').val();
 		data['selectDescriptions'].part 	= $('#selectDescriptionsPart').val();
 
-		
-
 		chrome.storage.local.set(
 			data
 		,function savedNotification(){
-			// $('#debug').val( JSON.stringify( data ) );
-			// alert(1)
+			// $('#debug').val( 'doApply\n'+JSON.stringify( data, null, 2 ) );
 			updateView();
 			// window.close();
 		});
