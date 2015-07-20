@@ -10,14 +10,23 @@ $(document).ready(function(){
 		$(document).click(function(e){
 			e.preventDefault();
 
-			chrome.storage.local.get('current',function(data){
-				var current = data.current;
-				console.log('current', current, current == 'selectRootElement');
+			chrome.storage.local.get(['current','selectRootElement'],function(data){
+				var current 			= data.current;
+				var selectRootElementSelector 	= data['selectRootElement'];
+				if(selectRootElementSelector != undefined)
+					if(selectRootElementSelector.hasOwnProperty('selector'))
+						selectRootElementSelector = selectRootElementSelector.selector;
+
+				console.log('onClick', {
+					current: 					current, 
+					currentIsSelectRootElement: current == 'selectRootElement',
+					selectRootElement: 			selectRootElement
+				});
 
 				if( current == 'selectRootElement' )
 					selectRootElement(e, current);
 				else
-					checkEvent(e, current);
+					checkEvent(e, current, selectRootElementSelector);
 			});
 		});
 	}
@@ -85,29 +94,37 @@ function selectRootElement(e, current){
 	saveDataForKey(key,data,true/*debug*/);
 }
 
-function selectorToArrays(selector){
+function selectorToArrays(rootSelector, selector){
 	var texts = [];
 	var links = [];
 	var images = [];
 
-	$(selector).each(function(elementIndex){
-		var element = $(selector).get(elementIndex);
-		var text = $(element)
+	$(rootSelector).each(function(rootElementIndex){
+		var rootElement = $(rootSelector).get(rootElementIndex);
+		var text 	= '';
+		var link 	= '';
+		var image 	= '';
+
+		$(rootElement).find(selector).each(function(elementIndex){
+			var element = $(rootElement).find(selector).get(elementIndex);
+			text 	+= $(element)
 					.clone()
 					.children()
 					.remove()
 					.end()
 					.text()
 					.trim();
+			text 	+= '\n';
 		
-		if(text) texts.push( text );
+			link 	+= $(element).attr('href');
+			link 	+= '\n';
+			image 	+= $(element).attr('src');
+			image 	+= '\n';
+		});
 
-		var link = $(element).attr('href');
-		if(link) links.push(link);
-
-		var image = $(element).attr('src');
-		if(image) images.push(image);
-
+		texts.push( text );
+		links.push(	link );
+		images.push(image);
 	});
 
 	return {
@@ -118,7 +135,8 @@ function selectorToArrays(selector){
 	};
 }
 
-function checkEvent(e, current){
+function checkEvent(e, current, rootSelector){
+	console.log( 'checkEvent', rootSelector );
 	var selector = getSelectorForElement(e.target);
 
 	if( selector.split('.').length <= 2 ){
@@ -135,7 +153,7 @@ function checkEvent(e, current){
 
 	selector = prompt('We are going to use this selector',selector);
 
-	var selectorObject = selectorToArrays(selector);
+	var selectorObject = selectorToArrays(rootSelector,selector);
 
 	var key 	= current;
 	var data 	= selectorObject;
