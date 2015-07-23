@@ -153,7 +153,8 @@ function checkEvent(e, current, rootSelector){
 
 	selector = prompt('We are going to use this selector',selector);
 
-	var selectorObject = selectorToArrays(rootSelector,selector);
+	// var selectorObject = selectorToArrays(rootSelector,selector);
+	var selectorObject = {selector:selector};
 
 	var key 	= current;
 	var data 	= selectorObject;
@@ -171,10 +172,13 @@ function saveDataForKey(key, data, debug){
 			currentObject = {};
 		}
 
+		if(currentObject.hasOwnProperty(key))
+			currentObject = currentObject[key];
+
 		currentObject.selector = data.selector;
-		currentObject.texts = data.texts;
-		currentObject.links = data.links;
-		currentObject.images = data.images;
+		// currentObject.texts = data.texts;
+		// currentObject.links = data.links;
+		// currentObject.images = data.images;
 
 		var object = {};
 		object[key] = currentObject;
@@ -182,7 +186,7 @@ function saveDataForKey(key, data, debug){
 		chrome.storage.local.set(
 			object
 		, function() {
-			if(debug)	console.log('Settings saved',object);
+			if(debug)	console.log('Settings saved for key',key,object,currentObject);
 		});
 	});
 }
