@@ -57,6 +57,12 @@
 						<button type="button" class="btn btn-primary" id="selectDates">Select dates</button>
 					</th>
 					<th>
+						<button type="button" class="btn btn-primary" id="selectStart">Select start</button>
+					</th>
+					<th>
+						<button type="button" class="btn btn-primary" id="selectEnd">Select end</button>
+					</th>
+					<th>
 						<button type="button" class="btn btn-primary" id="selectTitles">Select titles&nbsp;</button>
 					</th>
 					<th>
@@ -73,6 +79,12 @@
 					<th scope="row"> selector </th>
 					<td>
 						<input type="text" class="form-control" id="selectDatesSelector">
+					</td>
+					<td>
+						<input type="text" class="form-control" id="selectStartSelector">
+					</td>
+					<td>
+						<input type="text" class="form-control" id="selectEndSelector">
 					</td>
 					<td>
 						<input type="text" class="form-control" id="selectTitlesSelector">
@@ -93,6 +105,12 @@
 						 <input type="text" class="form-control" id="selectDatesSplit">
 					</td>
 					<td>
+						 <input type="text" class="form-control" id="selectStartSplit">
+					</td>
+					<td>
+						 <input type="text" class="form-control" id="selectEndSplit">
+					</td>
+					<td>
 						 <input type="text" class="form-control" id="selectTitlesSplit">
 					</td>
 					<td>
@@ -105,6 +123,18 @@
 					<th scope="row"> part </th>
 					<td>
 						<select id="selectDatesPart" class="form-control">
+							<option>first</option>
+							<option>last</option>
+						</select>
+					</td>
+					<td>
+						<select id="selectStartPart" class="form-control">
+							<option>first</option>
+							<option>last</option>
+						</select>
+					</td>
+					<td>
+						<select id="selectEndPart" class="form-control">
 							<option>first</option>
 							<option>last</option>
 						</select>
@@ -126,9 +156,11 @@
 				</tr>
 				<tr>
 					<th scope="row"> </th>
-					<td><button type="button" class="btn btn-default" id="applyDates">apply</button></td>
-					<td><button type="button" class="btn btn-default" id="applyTitles">apply</button></td>
-					<td><button type="button" class="btn btn-default" id="applyDescriptions">apply</button></td>
+					<td><button type="button" class="btn btn-default apply-button">apply</button></td>
+					<td><button type="button" class="btn btn-default apply-button">apply</button></td>
+					<td><button type="button" class="btn btn-default apply-button">apply</button></td>
+					<td><button type="button" class="btn btn-default apply-button">apply</button></td>
+					<td><button type="button" class="btn btn-default apply-button">apply</button></td>
 					<td></td>
 					<td></td>
 				</tr>
