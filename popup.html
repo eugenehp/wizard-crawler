@@ -54,31 +54,37 @@
 				<tr>
 					<th>#</th>
 					<th>
-						<button type="button" class="btn btn-primary" id="selectDates">Select dates</button>
+						<button type="button" class="btn btn-primary" id="selectStartDates">Start dates</button>
 					</th>
 					<th>
-						<button type="button" class="btn btn-primary" id="selectStart">Select start</button>
+						<button type="button" class="btn btn-primary" id="selectEndDates">End dates</button>
 					</th>
 					<th>
-						<button type="button" class="btn btn-primary" id="selectEnd">Select end</button>
+						<button type="button" class="btn btn-primary" id="selectStart">Start times</button>
 					</th>
 					<th>
-						<button type="button" class="btn btn-primary" id="selectTitles">Select titles&nbsp;</button>
+						<button type="button" class="btn btn-primary" id="selectEnd">End times</button>
 					</th>
 					<th>
-						<button type="button" class="btn btn-primary" id="selectDescriptions">Select descriptions</button>
+						<button type="button" class="btn btn-primary" id="selectTitles">Titles&nbsp;</button>
 					</th>
 					<th>
-						<button type="button" class="btn btn-primary" id="selectLink">Select link</button>
+						<button type="button" class="btn btn-primary" id="selectDescriptions">Descriptions</button>
 					</th>
 					<th>
-						<button type="button" class="btn btn-primary" id="selectImage">Select image</button>
+						<button type="button" class="btn btn-primary" id="selectLink">Links</button>
+					</th>
+					<th>
+						<button type="button" class="btn btn-primary" id="selectImage">Image</button>
 					</th>
 				</tr>
 				<tr>
 					<th scope="row"> selector </th>
 					<td>
-						<input type="text" class="form-control" id="selectDatesSelector">
+						<input type="text" class="form-control" id="selectStartDatesSelector">
+					</td>
+					<td>
+						<input type="text" class="form-control" id="selectEndDatesSelector">
 					</td>
 					<td>
 						<input type="text" class="form-control" id="selectStartSelector">
@@ -102,7 +108,10 @@
 				<tr>
 					<th scope="row"> split </th>
 					<td>
-						 <input type="text" class="form-control" id="selectDatesSplit">
+						 <input type="text" class="form-control" id="selectStartDatesSplit">
+					</td>
+					<td>
+						 <input type="text" class="form-control" id="selectEndDatesSplit">
 					</td>
 					<td>
 						 <input type="text" class="form-control" id="selectStartSplit">
@@ -122,7 +131,13 @@
 				<tr>
 					<th scope="row"> part </th>
 					<td>
-						<select id="selectDatesPart" class="form-control">
+						<select id="selectStartDatesPart" class="form-control">
+							<option>first</option>
+							<option>last</option>
+						</select>
+					</td>
+					<td>
+						<select id="selectEndDatesPart" class="form-control">
 							<option>first</option>
 							<option>last</option>
 						</select>

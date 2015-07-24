@@ -1,5 +1,5 @@
 // creating the template for a specific URL
-var ELEMENTS = ['data','selectRootElement','selectDates','selectStart','selectEnd','selectTitles','selectDescriptions','selectLink','selectImage','selectStartTime','selectEndTime'];
+var ELEMENTS = ['data','selectRootElement','selectStartDates','selectEndDates','selectStart','selectEnd','selectTitles','selectDescriptions','selectLink','selectImage','selectStartTime','selectEndTime'];
 
 $(document).ready(function(){
 
@@ -41,7 +41,7 @@ function exportCSV(){
 	chrome.storage.local.get('filteredArray',function(data){
 		if(data.hasOwnProperty('filteredArray')){
 			data = data.filteredArray;
-			var keys = ['date','start','end','title','description','link','image'];
+			var keys = ['startDate','endDate','start','end','title','description','link','image'];
 
 			JSONToCSVConvertor(data,'CSV_Report',keys);
 		}
@@ -54,24 +54,34 @@ function updateView() {
 
 		$('#debug').val( JSON.stringify( data, null, 2 ) );
 
-		var selectDatesSplit	 	= '';
-		var selectDatesPart 		= '';
-		var selectStartSplit 		= '';
-		var selectStartPart 		= '';
-		var selectEndSplit 			= '';
-		var selectEndPart 			= '';
-		var selectTitlesSplit 		= '';
-		var selectTitlesPart 		= '';
-		var selectDescriptionsSplit = '';
-		var selectDescriptionsPart 	= '';
+		var selectStartDatesSplit	 	= '';
+		var selectStartDatesPart 		= '';
+		var selectEndDatesSplit	 		= '';
+		var selectEndDatesPart 			= '';
+		var selectStartSplit 			= '';
+		var selectStartPart 			= '';
+		var selectEndSplit 				= '';
+		var selectEndPart 				= '';
+		var selectTitlesSplit 			= '';
+		var selectTitlesPart 			= '';
+		var selectDescriptionsSplit 	= '';
+		var selectDescriptionsPart 		= '';
 
-		if(data['selectDates']) {
-			$('#selectDatesSelector').val( data['selectDates'].selector );
+		if(data['selectStartDates']) {
+			$('#selectStartDatesSelector').val( data['selectStartDates'].selector );
 
-			selectDatesSplit = data['selectDates'].split;
-			selectDatesPart = data['selectDates'].part;
-			$('#selectDatesSplit').val(selectDatesSplit);
-			$('#selectDatesPart').val(selectDatesPart || 'first');
+			selectStartDatesSplit = data['selectStartDates'].split;
+			selectStartDatesPart = data['selectStartDates'].part;
+			$('#selectStartDatesSplit').val(selectStartDatesSplit);
+			$('#selectStartDatesPart').val(selectStartDatesPart || 'first');
+		}
+		if(data['selectEndDates']) {
+			$('#selectEndDatesSelector').val( data['selectEndDates'].selector );
+
+			selectEndDatesSplit = data['selectEndDates'].split;
+			selectEndDatesPart = data['selectEndDates'].part;
+			$('#selectEndDatesSplit').val(selectEndDatesSplit);
+			$('#selectEndDatesPart').val(selectEndDatesPart || 'first');
 		}
 		if(data['selectStart']) {
 			$('#selectStartSelector').val( data['selectStart'].selector );
@@ -124,20 +134,28 @@ function updateView() {
 
 			var index 			= 1 + i;
 
-			var date 		= "" || row['selectDates'];
-			var start 		= "" || row['selectStart'];
-			var end 		= "" || row['selectEnd'];
-			var title 		= "" || row['selectTitles'];
-			var description = "" || row['selectDescriptions'];
-			var link 		= "" || row['selectLink'];
-			var image 		= "" || row['selectImage'];
+			var startDate 		= "" || row['selectStartDates'];
+			var endDate 		= "" || row['selectEndDates'];
+			var start 			= "" || row['selectStart'];
+			var end 			= "" || row['selectEnd'];
+			var title 			= "" || row['selectTitles'];
+			var description 	= "" || row['selectDescriptions'];
+			var link 			= "" || row['selectLink'];
+			var image 			= "" || row['selectImage'];
 
-			if(selectDatesSplit){
-				date = date.split(selectDatesSplit);
-				var part = selectDatesPart === 'first' ? 0 : 1;
-				date = date[part];
+			if(selectStartDatesSplit){
+				startDate = startDate.split(selectStartDatesSplit);
+				var part = selectStartDatesPart === 'first' ? 0 : 1;
+				startDate = startDate[part];
 			}
-			date = date.split("	").join(" ");
+			startDate = startDate.split("	").join(" ");
+
+			if(selectEndDatesSplit){
+				endDate = endDate.split(selectEndDatesSplit);
+				var part = selectEndDatesPart === 'first' ? 0 : 1;
+				endDate = endDate[part];
+			}
+			endDate = endDate.split("	").join(" ");
 
 			if(selectStartSplit){
 				start = start.split(selectStartSplit);
@@ -166,7 +184,8 @@ function updateView() {
 			}
 
 			var row = 	"<tr><th scope='row'>"+index+"</th><td> "
-			row 	+=	date+" </td><td> ";
+			row 	+=	startDate+" </td><td> ";
+			row 	+=	endDate+" </td><td> ";
 			row 	+=	start+" </td><td> ";
 			row 	+=	end+" </td><td> ";
 			row 	+=	title+" </td><td> ";
@@ -176,7 +195,8 @@ function updateView() {
 			$('#tbody').append( row );
 
 			filteredArray.push({
-				'date': 		date.trim(),
+				'startDate': 	startDate.trim(),
+				'endDate': 		endDate.trim(),
 				'start': 		start.trim(),
 				'end': 			end.trim(),
 				'title': 		title.trim(),
@@ -209,7 +229,8 @@ function doSelect(selectName){
 
 function doApply(){
 	chrome.storage.local.get(ELEMENTS,function(data){
-		if( !data['selectDates'] ) 			data['selectDates'] = {};
+		if( !data['selectStartDates'] ) 	data['selectStartDates'] = {};
+		if( !data['selectEndDates'] ) 		data['selectEndDates'] = {};
 		if( !data['selectStart'] ) 			data['selectStart'] = {};
 		if( !data['selectEnd'] ) 			data['selectEnd'] = {};
 		if( !data['selectTitles'] ) 		data['selectTitles'] = {};
@@ -217,7 +238,8 @@ function doApply(){
 		if( !data['selectLink'] ) 			data['selectLink'] = {};
 		if( !data['selectImage'] ) 			data['selectImage'] = {};
 
-		data['selectDates'].selector 			= $('#selectDatesSelector').val();
+		data['selectStartDates'].selector 		= $('#selectEndDatesSelector').val();
+		data['selectEndDates'].selector 		= $('#selectEndDatesSelector').val();
 		data['selectStart'].selector 			= $('#selectStartSelector').val();
 		data['selectEnd'].selector 				= $('#selectEndSelector').val();
 		data['selectTitles'].selector 			= $('#selectTitlesSelector').val();
@@ -225,13 +247,15 @@ function doApply(){
 		data['selectLink'].selector 			= $('#selectLinkSelector').val();
 		data['selectImage'].selector 			= $('#selectImageSelector').val();
 
-		data['selectDates'].split 			= $('#selectDatesSplit').val();
+		data['selectStartDates'].split 		= $('#selectStartDatesSplit').val();
+		data['selectEndDates'].split 		= $('#selectEndDatesSplit').val();
 		data['selectStart'].split 			= $('#selectStartSplit').val();
 		data['selectEnd'].split 			= $('#selectEndSplit').val();
 		data['selectTitles'].split 			= $('#selectTitlesSplit').val();
 		data['selectDescriptions'].split 	= $('#selectDescriptionsSplit').val();
 
-		data['selectDates'].part 			= $('#selectDatesPart').val();
+		data['selectStartDates'].part 		= $('#selectStartDatesPart').val();
+		data['selectEndDates'].part 		= $('#selectEndDatesPart').val();
 		data['selectStart'].part 			= $('#selectStartPart').val();
 		data['selectEnd'].part 				= $('#selectEndPart').val();
 		data['selectTitles'].part	 		= $('#selectTitlesPart').val();
