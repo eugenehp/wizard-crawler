@@ -1,5 +1,5 @@
 // creating the template for a specific URL
-var ELEMENTS = ['selectRootElement','selectDates','selectTitles','selectDescriptions','selectLink','selectImage'];
+var ELEMENTS = ['data','selectRootElement','selectDates','selectTitles','selectDescriptions','selectLink','selectImage','selectStartTime','selectEndTime'];
 
 $(document).ready(function(){
 
