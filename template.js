@@ -38,12 +38,12 @@ function saveTemplate(){
 
 function exportCSV(){
 	// $('#tempateContainer').show();
-	chrome.storage.local.get(ELEMENTS,function(data){
-		if(data.hasOwnProperty('data')){
-			data = data.data;
-			JSONToCSVConvertor(data,'CSV_Report',ELEMENTS.slice(2,ELEMENTS.length));
-			// var csv = 
-			// $('#template').val( JSON.stringify(data,null,2) );
+	chrome.storage.local.get('filteredArray',function(data){
+		if(data.hasOwnProperty('filteredArray')){
+			data = data.filteredArray;
+			var keys = ['date','start','end','title','description','link','image'];
+
+			JSONToCSVConvertor(data,'CSV_Report',keys);
 		}
 		
 	});
@@ -115,6 +115,8 @@ function updateView() {
 		var collection = data.data;
 		var length = collection.length;
 		$('#tbody').children().remove();
+
+		var filteredArray = [];
 		
 		for (var i = 0; i < length; i++) {
 
@@ -135,18 +137,21 @@ function updateView() {
 				var part = selectDatesPart === 'first' ? 0 : 1;
 				date = date[part];
 			}
+			date = date.split("	").join(" ");
 
 			if(selectStartSplit){
 				start = start.split(selectStartSplit);
 				var part = selectStartPart === 'first' ? 0 : 1;
 				start = start[part];
 			}
+			start = start.split("	").join(" ");
 
 			if(selectEndSplit){
 				end = end.split(selectEndSplit);
 				var part = selectEndPart === 'first' ? 0 : 1;
 				end = end[part];
 			}
+			end = end.split("	").join(" ");
 
 			if(selectTitlesSplit){
 				title = title.split(selectTitlesSplit);
@@ -169,7 +174,23 @@ function updateView() {
 			row 	+=	'<a class="btn btn-default" href="'+link+'" title="'+link+'">link</a></td><td>';
 			row 	+=	"<img src='"+image+"' alt='"+image+"' width=100 height=100/></td></tr>";
 			$('#tbody').append( row );
+
+			filteredArray.push({
+				'date': 		date.trim(),
+				'start': 		start.trim(),
+				'end': 			end.trim(),
+				'title': 		title.trim(),
+				'description': 	description.trim(),
+				'link': 		link.trim(),
+				'image': 		image.trim()
+			});
 		};
+
+		chrome.storage.local.set({
+			'filteredArray': filteredArray
+		},function savedNotification(){
+			
+		});
 	})
 }
 
@@ -236,7 +257,7 @@ function JSONToCSVConvertor(JSONData, ReportTitle, KEYS) {
     var CSV = '';    
     //Set Report title in first row or line
     
-    CSV += ReportTitle + '\r\n\n';
+    // CSV += ReportTitle + '\r\n\n';
 
         var row = KEYS.join(",");
         
