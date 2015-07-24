@@ -208,7 +208,7 @@ function doSelection(){
 				for(var i=0;i<keys.length;i++){
 					var key = keys[i];
 					allEmpty = allEmpty && object[key].length == 0;
-					if( object[key] === previous[key] )
+					if( object[key] === previous[key] /*&& object[key] != ""*/ )
 						counter++;
 				}
 				object.counter 		= counter;
@@ -242,9 +242,6 @@ function saveDataForKey(key, data, debug, callback){
 			currentObject = currentObject[key];
 
 		currentObject.selector = data.selector;
-		currentObject.texts = data.texts;
-		currentObject.links = data.links;
-		currentObject.images = data.images;
 
 		var object = {};
 		object[key] = currentObject;

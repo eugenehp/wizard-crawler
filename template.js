@@ -78,17 +78,27 @@ function updateView() {
 			$('#selectImageSelector').val( data['selectImage'].selector );
 		}
 
-		var length = dates.length || titles.length || descriptions.length || links.length || images.length;
-
+		// var length = dates.length || titles.length || descriptions.length || links.length || images.length;
+		var collection = data.data;
+		var length = collection.length;
 		$('#tbody').children().remove();
+		
 		for (var i = 0; i < length; i++) {
 
+			var row = collection[i];
+
 			var index 			= 1 + i;
-			var date 			= ""; if( dates ) if( dates.length > i ) 			date = dates[i];
-			var title 			= ""; if( titles ) if( titles.length > i ) 			title = titles[i];
-			var description 	= ""; if( descriptions ) if( descriptions.length > i ) 	description = descriptions[i];
-			var link 			= ""; if( links ) if( links.length > i ) 			link = links[i];
-			var image 			= ""; if( images ) if( images.length > i )			image = images[i];
+			var date 			= "";  //if( dates ) if( dates.length > i ) 			date = dates[i];
+			var title 			= ""; //if( titles ) if( titles.length > i ) 			title = titles[i];
+			var description 	= ""; //if( descriptions ) if( descriptions.length > i ) 	description = descriptions[i];
+			var link 			= ""; //if( links ) if( links.length > i ) 			link = links[i];
+			var image 			= ""; //if( images ) if( images.length > i )			image = images[i];
+
+			date = row['selectDates'];
+			title = row['selectTitles'];
+			description = row['selectDescriptions'];
+			link = row['selectLink'];
+			image = row['selectImage'];
 
 			if(selectDatesSplit){
 				date = date.split(selectDatesSplit);
