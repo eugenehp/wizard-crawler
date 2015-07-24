@@ -44,6 +44,10 @@ function selectRootElement(e, current){
 		
 		var node 				= element;
 		var fullSelectorName 	= getSelectorForElement(node);
+		var tagName 			= $(element).get(0).tagName;
+
+		fullSelectorName 		= tagName;
+
 		node 					= node.parent();
 		fullSelectorName 		= getSelectorForElement(node) + ' > ' + fullSelectorName;
 		node 					= node.parent();
